@@ -1,0 +1,7 @@
+[package]
+name = "neo-rust"
+version = "0.1.0"
+authors = ["simonalong"]
+edition = "2018"
+
+[dependencies]

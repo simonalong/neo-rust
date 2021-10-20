@@ -21,62 +21,57 @@ use std::borrow::Cow;
 //     }
 // }
 
-pub trait Put<T> {
-    /// Performs the conversion.
-    #[must_use]
-    fn put_str(&self, key: &str, value: T) -> &Self;
-}
-
 pub struct NeoMap {
     data_map: DashMap<String, Value>
 }
+
+trait Put<T> {
+    fn put(&self, key: &str, value: T);
+}
+
+impl Put<String> for NeoMap {
+    fn put(&self, key: &str, value: String) {
+        self.data_map.insert(String::from(key), Value::from(value));
+    }
+}
+
 
 impl NeoMap {
     pub fn new() -> Self {
         NeoMap { data_map: DashMap::new() }
     }
 
-    pub fn get_i64(&self, key: &str) -> Option<i64> {
-        let value_ref = self.data_map.get(key);
-
-        let value = match value_ref {
-            Some(data) => {
-                data
-            }
-            _ => {
-                return Option::Some(0);
-            }
-        };
-        value.as_i64()
-    }
-
-    // pub fn put(&self, key: &str, value: &str) -> &NeoMap {
-    //     self.data_map.insert(String::from(key), Value::from(value));
-    //     self
+    // pub fn get_i64(&self, key: &str) -> Option<i64> {
+    //     let value_ref = self.data_map.get(key);
+    //
+    //     let value = match value_ref {
+    //         Some(data) => {
+    //             data
+    //         }
+    //         _ => {
+    //             return Option::Some(0);
+    //         }
+    //     };
+    //     value.as_i64()
     // }
-
-    // pub fn put_i64(&self, key: &str, value: i64) -> &NeoMap {
-    //     self.data_map.insert(String::from(key), Value::from(value).clone());
-    //     self
+    //
+    // pub fn contain_key(&self, key: &str) -> bool {
+    //     self.data_map.contains_key(key)
     // }
-
-    pub fn contain_key(&self, key: &str) -> bool {
-        self.data_map.contains_key(key)
-    }
-
-    pub fn del(&self, key: &str) {
-        self.data_map.remove(key);
-    }
-
-    pub fn get(&self, key: &str) -> Option<Value> {
-        let v = self.data_map.get("key");
-        if let Some(re) = v {
-            Option::Some(re.value().clone())
-        } else {
-            Option::None
-        }
-    }
-
+    //
+    // pub fn del(&self, key: &str) {
+    //     self.data_map.remove(key);
+    // }
+    //
+    // pub fn get(&self, key: &str) -> Option<Value> {
+    //     let v = self.data_map.get("key");
+    //     if let Some(re) = v {
+    //         Option::Some(re.value().clone())
+    //     } else {
+    //         Option::None
+    //     }
+    // }
+    //
     pub fn get_string(&self, key: &str) -> Option<String> {
         let v = self.data_map.get("key");
         if let Some(re) = v {
@@ -238,13 +233,7 @@ impl NeoMap {
 //     }
 // }
 
-impl<'a> Put<&'a str> for NeoMap {
 
-    fn put_str(&self, key: &str, value: &'a str) -> &Self {
-        self.data_map.insert(String::from(key), Value::from(value));
-        self
-    }
-}
 //
 // // impl<'a> Put<Cow<&'a str>> for NeoMap {
 // //     #[inline]

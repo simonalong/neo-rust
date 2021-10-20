@@ -4,9 +4,7 @@ use std::collections::HashMap;
 #[test]
 pub fn test1() {
     let neo_map = NeoMap::new();
-    // neo_map.put("key", "v");
-    neo_map.put_str("key", "v");
-    // println!("{}", neo_map.get_str("key"));
+    neo_map.put("key", "v");
     println!("{}", neo_map.get_string("key").unwrap());
 }
 

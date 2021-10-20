@@ -21,14 +21,14 @@ use std::borrow::Cow;
 //     }
 // }
 
-pub trait Put<T>: Sized {
+pub trait Put<T> {
     /// Performs the conversion.
     #[must_use]
-    fn put(&self, key: &str, value: T) -> &Self;
+    fn put_str(&self, key: &str, value: T) -> &Self;
 }
 
 pub struct NeoMap {
-    data_map: DashMap<String, Value>,
+    data_map: DashMap<String, Value>
 }
 
 impl NeoMap {
@@ -44,21 +44,21 @@ impl NeoMap {
                 data
             }
             _ => {
-                return Option::Some(0)
+                return Option::Some(0);
             }
         };
         value.as_i64()
     }
 
-    pub fn put(&self, key: &str, value: &str) -> &NeoMap {
-        self.data_map.insert(String::from(key), Value::from(value));
-        self
-    }
+    // pub fn put(&self, key: &str, value: &str) -> &NeoMap {
+    //     self.data_map.insert(String::from(key), Value::from(value));
+    //     self
+    // }
 
-    pub fn put_i64(&self, key: &str, value: i64) -> &NeoMap {
-        self.data_map.insert(String::from(key), Value::from(value));
-        self
-    }
+    // pub fn put_i64(&self, key: &str, value: i64) -> &NeoMap {
+    //     self.data_map.insert(String::from(key), Value::from(value).clone());
+    //     self
+    // }
 
     pub fn contain_key(&self, key: &str) -> bool {
         self.data_map.contains_key(key)
@@ -68,28 +68,27 @@ impl NeoMap {
         self.data_map.remove(key);
     }
 
-    // pub fn get_str(&self, key: &str) -> &str {
-    //     // let value_ref = self.data_map.get(key);
-    //     //
-    //     // let value = match value_ref {
-    //     //     Some(data) => {
-    //     //         data
-    //     //     }
-    //     //     _ => {
-    //     //         return Box::new("")
-    //     //     }
-    //     // };
-    //     // Box::new(value.as_str().unwrap().clone())
-    //     // (&*self.data_map.get(key).unwrap()).as_str().unwrap()
-    //
-    //     self.data_map.get(key).unwrap().as_str().unwrap()
-    // }
-
-    pub fn get(&self, key: &str) -> Box<i64> {
-        Box::new(self.data_map.get(key).unwrap().as_i64().unwrap())
+    pub fn get(&self, key: &str) -> Option<Value> {
+        let v = self.data_map.get("key");
+        if let Some(re) = v {
+            Option::Some(re.value().clone())
+        } else {
+            Option::None
+        }
     }
 
-    pub fn get_string(&self, key: &str) {}
+    pub fn get_string(&self, key: &str) -> Option<String> {
+        let v = self.data_map.get("key");
+        if let Some(re) = v {
+            Option::Some(re.value().to_string())
+        } else {
+            Option::None
+        }
+    }
+
+    // pub fn get_i64(&self, key: &str) -> Box<i64> {
+    //     Box::new(self.data_map.get(key).unwrap().as_i64().unwrap().clone())
+    // }
 //
 //     fn get_i8(&self, key:&str);
 //     fn get_i16(&self, key:&str);
@@ -109,7 +108,7 @@ impl NeoMap {
 //
 //     fn get_neo_map(&self, key:&str);
 }
-//
+
 // impl Put<i8> for NeoMap {
 //     #[inline]
 //     fn put(&self, key: &str, value: i8) -> &NeoMap {
@@ -231,13 +230,21 @@ impl NeoMap {
 //     }
 // }
 //
-// impl<'a> Put<&'a str> for NeoMap {
+// impl Put<&str> for NeoMap {
 //     #[inline]
-//     fn put(&self, key: &str, value: &str) -> &NeoMap {
+//     fn put_str(&self, key: &str, value: &str) -> &NeoMap {
 //         self.data_map.insert(String::from(key), Value::from(value));
 //         self
 //     }
 // }
+
+impl<'a> Put<&'a str> for NeoMap {
+
+    fn put_str(&self, key: &str, value: &'a str) -> &Self {
+        self.data_map.insert(String::from(key), Value::from(value));
+        self
+    }
+}
 //
 // // impl<'a> Put<Cow<&'a str>> for NeoMap {
 // //     #[inline]
@@ -259,6 +266,14 @@ impl NeoMap {
 //     #[inline]
 //     fn put(&self, key: &str, value: NeoMap) -> &NeoMap {
 //         self.data_map.insert(String::from(key), Value::from(value));
+//         self
+//     }
+// }
+//
+// impl Put<Value> for NeoMap {
+//     #[inline]
+//     fn put(&self, key: &str, value: Value) -> &NeoMap {
+//         self.data_map.insert(String::from(key), value);
 //         self
 //     }
 // }

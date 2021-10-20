@@ -52,34 +52,17 @@ impl NeoMap {
     //     NeoMap { data_map: DashMap::new() }
     // }
 
-    pub fn get_string(&self, key: &str) -> Option<String> {
-        let v = self.data_map.get("key");
-        if let Some(re) = v {
-            Option::Some(re.value().to_string())
-        } else {
-            Option::None
-        }
-    }
-
-
 
     //
-// pub fn contain_key(&self, key: &str) -> bool {
-//     self.data_map.contains_key(key)
-// }
-//
-// pub fn del(&self, key: &str) {
-//     self.data_map.remove(key);
-// }
-//
-    pub fn get_value(&self, key: &str) -> Option<Value> {
-        let v = self.data_map.get("key");
-        if let Some(re) = v {
-            Option::Some(re.value().clone())
-        } else {
-            Option::None
-        }
+    pub fn contain_key(&self, key: &str) -> bool {
+        self.data_map.contains_key(key)
     }
+
+    pub fn del(&self, key: &str) {
+        self.data_map.remove(key);
+    }
+
+
 //
 
 // pub fn get_i64(&self, key: &str) -> Box<i64> {
@@ -239,10 +222,46 @@ impl NeoMap {
                 data
             }
             _ => {
-                return Option::None
+                return Option::None;
             }
         };
         value.as_array().cloned()
+    }
+
+    pub fn get_string(&self, key: &str) -> Option<String> {
+        let v = self.data_map.get(key);
+        if let Some(re) = v {
+            if let Some(e) = re.value().as_str() {
+                Option::Some(String::from(e))
+            } else {
+                Option::None
+            }
+        } else {
+            Option::None
+        }
+    }
+
+    // pub fn get_str(&self, key: &str) -> Option<&str> {
+    //     let value_ref = self.data_map.get(key);
+    //
+    //     let value = match value_ref {
+    //         Some(data) => {
+    //             data
+    //         }
+    //         _ => {
+    //             return Option::None;
+    //         }
+    //     };
+    //     value.as_str()
+    // }
+
+    pub fn get_value(&self, key: &str) -> Option<Value> {
+        let v = self.data_map.get("key");
+        if let Some(re) = v {
+            Option::Some(re.value().clone())
+        } else {
+            Option::None
+        }
     }
 }
 
@@ -438,6 +457,14 @@ impl Put<String> for NeoMap {
     #[inline]
     fn put(&self, key: &str, value: String) -> &NeoMap {
         self.data_map.insert(String::from(key), Value::from(value));
+        self
+    }
+}
+
+impl Put<&String> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &String) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(value.clone()));
         self
     }
 }

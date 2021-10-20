@@ -22,6 +22,8 @@ pub fn put_base_test1() {
     let f32:f32 = 0.0;
     let f64:f64 = 0.1;
 
+    let str = "str";
+
     neo_map.put("i8", i8);
     neo_map.put("i16", i16);
     neo_map.put("i32", i32);
@@ -38,6 +40,8 @@ pub fn put_base_test1() {
     neo_map.put("true", true);
     neo_map.put("false", false);
 
+    neo_map.put("str", str);
+
     assert_eq!(i8, neo_map.get_i8("i8").unwrap());
     assert_eq!(i16, neo_map.get_i16("i16").unwrap());
     assert_eq!(i32, neo_map.get_i32("i32").unwrap());
@@ -53,6 +57,8 @@ pub fn put_base_test1() {
 
     assert_eq!(true, neo_map.get_bool("true").unwrap());
     assert_eq!(false, neo_map.get_bool("false").unwrap());
+
+    // assert_eq!(str, neo_map.get_str("str").unwrap());
 }
 
 #[test]

@@ -1,6 +1,7 @@
 use neo_rust::NeoMap;
 use neo_rust::Put;
 
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct MyClass {
     name: String
 }
@@ -122,21 +123,32 @@ pub fn put_base_test3() {
     v.push(13);
     neo_map.put("vec1", &v);
 
-    // let mut v = Vec::new();
-    // v.push(MyClass{name: String::from("v1")});
-    // v.push(MyClass{name: String::from("v3")});
-    // neo_map.put("vec2", v);
-    //
-    // neo_map.put("neo_map", NeoMap::new().put("k1", "v1").put("k2", "v2"));
-    // neo_map.put("type", MyClass { name: String::from("ok") });
-
     let result = neo_map.get_vec("vec1").unwrap();
-
     let mut re_v = Vec::new();
     for x in result {
         re_v.push(x.as_i64().unwrap() as i32)
     }
     assert_eq!(v, re_v);
+
+
+    // todo 无法执行
+    // let mut v = Vec::new();
+    // v.push(MyClass{name: String::from("v1")});
+    // v.push(MyClass{name: String::from("v3")});
+    // neo_map.put("vec2", v);
+    //
+    // let result = neo_map.get_vec("vec2").unwrap();
+    // let mut re_v = Vec::new();
+    // for x in result {
+    //     let d:MyClass = serde_json::from_value(x).unwrap();
+    //     re_v.push(d)
+    // }
+    // assert_eq!(v, re_v);
+
+    // neo_map.put("neo_map", NeoMap::new().put("k1", "v1").put("k2", "v2"));
+    // neo_map.put("type", MyClass { name: String::from("ok") });
+
+
 }
 //
 // #[test]

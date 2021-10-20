@@ -58,7 +58,7 @@ pub fn put_base_test1() {
     assert_eq!(true, neo_map.get_bool("true").unwrap());
     assert_eq!(false, neo_map.get_bool("false").unwrap());
 
-    // assert_eq!(str, neo_map.get_str("str").unwrap());
+    assert_eq!(str, neo_map.get_string("str").unwrap());
 }
 
 #[test]

@@ -230,6 +230,20 @@ impl NeoMap {
         };
         value.as_bool()
     }
+
+    pub fn get_vec(&self, key: &str) -> Option<Vec<Value>> {
+        let value_ref = self.data_map.get(key);
+
+        let value = match value_ref {
+            Some(data) => {
+                data
+            }
+            _ => {
+                return Option::None
+            }
+        };
+        value.as_array().cloned()
+    }
 }
 
 impl Put<i8> for NeoMap {
@@ -265,6 +279,38 @@ impl Put<i64> for NeoMap {
 }
 
 
+impl Put<&i8> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &i8) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(*value));
+        self
+    }
+}
+
+impl Put<&i16> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &i16) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(*value));
+        self
+    }
+}
+
+impl Put<&i32> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &i32) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(*value));
+        self
+    }
+}
+
+impl Put<&i64> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &i64) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(*value));
+        self
+    }
+}
+
 impl Put<u8> for NeoMap {
     #[inline]
     fn put(&self, key: &str, value: u8) -> &NeoMap {
@@ -297,6 +343,40 @@ impl Put<u64> for NeoMap {
     }
 }
 
+
+impl Put<&u8> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &u8) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(*value));
+        self
+    }
+}
+
+impl Put<&u16> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &u16) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(*value));
+        self
+    }
+}
+
+impl Put<&u32> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &u32) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(*value));
+        self
+    }
+}
+
+impl Put<&u64> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &u64) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(*value));
+        self
+    }
+}
+
+
 impl Put<f32> for NeoMap {
     #[inline]
     fn put(&self, key: &str, value: f32) -> &NeoMap {
@@ -313,10 +393,35 @@ impl Put<f64> for NeoMap {
     }
 }
 
+
+impl Put<&f32> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &f32) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(*value));
+        self
+    }
+}
+
+impl Put<&f64> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &f64) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(*value));
+        self
+    }
+}
+
 impl Put<bool> for NeoMap {
     #[inline]
     fn put(&self, key: &str, value: bool) -> &NeoMap {
         self.data_map.insert(String::from(key), Value::from(value));
+        self
+    }
+}
+
+impl Put<&bool> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &bool) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(*value));
         self
     }
 }
@@ -363,6 +468,14 @@ impl<'a, T: Clone + Into<Value>> Put<Vec<T>> for NeoMap {
     #[inline]
     fn put(&self, key: &str, value: Vec<T>) -> &NeoMap {
         self.data_map.insert(String::from(key), Value::from(value));
+        self
+    }
+}
+
+impl<'a, T: Clone + Into<Value>> Put<&Vec<T>> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &Vec<T>) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(value.clone()));
         self
     }
 }

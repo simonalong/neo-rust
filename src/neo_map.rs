@@ -7,6 +7,8 @@ use std::fmt::Display;
 use serde::__private::Formatter;
 use std::fmt;
 use serde::de::DeserializeOwned;
+use crate::ObjectUtil;
+use std::any::Any;
 
 /// 提供neo_map["key"]的能力
 impl Index<&str> for NeoMap {
@@ -43,14 +45,6 @@ impl NeoMap {
     pub fn new() -> Self {
         NeoMap { data_map: DashMap::new() }
     }
-
-    // todo
-    // pub fn of<T>(key1: &str, value1: T, key2: &str, value2: T) -> Self {
-    //     let map: DashMap<String, Value> = DashMap::new();
-    //     map.insert(String::from(key1), Value::from(value1));
-    //
-    //     NeoMap { data_map: map }
-    // }
 
     pub fn contain_key(&self, key: &str) -> bool {
         self.data_map.contains_key(key)

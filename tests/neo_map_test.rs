@@ -233,25 +233,6 @@ pub fn println_test1() {
     println!("{:?}", neo_map);
 }
 
-
-#[test]
-pub fn of_test1() {
-    // let neo_map = NeoMap::of(&["k1", "v1", "k2", "v2"]);
-    //
-    // println!("{:?}", neo_map);
-}
-
-#[test]
-pub fn as_test1() {
-    let neo_map = NeoMap::new();
-
-    neo_map.put("name", "zhou");
-    neo_map.put("age", 12);
-
-    let target:AsClass = neo_map.as_type().unwrap();
-    println!("{:?}", target);
-}
-
 #[derive(Serialize, Deserialize, Debug)]
 struct AsClass{
     name: String,

@@ -208,6 +208,26 @@ impl NeoMap {
         value.as_array().cloned()
     }
 
+    pub fn get_vec_type<'a, T: Clone + Serialize + for<'de> serde::Deserialize<'de>>(&self, key: &str) -> Option<Vec<T>> {
+        let value_ref = self.data_map.get(key);
+
+        let value = match value_ref {
+            Some(data) => {
+                data
+            }
+            _ => {
+                return Option::None;
+            }
+        };
+        if let Some(vec_value) = value.as_array() {
+            Option::Some(vec_value.into_iter().map(|x|{
+                serde_json::from_value(x.clone()).unwrap()
+            }).collect())
+        } else {
+            Option::None
+        }
+    }
+
     pub fn get_string(&self, key: &str) -> Option<String> {
         let v = self.data_map.get(key);
         if let Some(re) = v {
@@ -274,6 +294,24 @@ impl NeoMap {
         }
     }
 }
+
+impl PartialEq for NeoMap {
+    fn eq(&self, other: &Self) -> bool {
+        let map = &self.data_map;
+        for x in map {
+            if !other.data_map.contains_key(x.key().as_str()) {
+                return false;
+            }
+        }
+        true
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl Eq for NeoMap {}
 
 impl Put<i8> for NeoMap {
     #[inline]

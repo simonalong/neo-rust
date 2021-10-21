@@ -118,7 +118,7 @@ pub fn put_base_test2() {
     assert_eq!(false, neo_map.get_bool("false").unwrap());
 }
 
-// 测试type
+// 测试自定义结构
 #[test]
 pub fn put_type_test1() {
     // 实际值
@@ -147,18 +147,16 @@ pub fn put_map_test1() {
     // 实际值
     let neo_map = NeoMap::new();
 
-    let data = NeoMap::new();
-    data.put("key", "v1").put("k2", "v2");
-    neo_map.put("type", &data);
+    let neo_map_expect = NeoMap::new();
+    neo_map_expect.put("key", "v1").put("k2", "v2");
+    neo_map.put("type", &neo_map_expect);
 
-    let type_act:NeoMap = neo_map.get_neo_map("type").unwrap();
+    let neo_map_act:NeoMap = neo_map.get_neo_map("type").unwrap();
 
-    println!("{:?}", type_act);
-
-    assert_eq!(data.to_json_string(), type_act.to_json_string());
+    assert_eq!(neo_map_expect, neo_map_act);
 }
 
-// 测试基本类型
+// 测试集合，内部为neo_map
 #[test]
 pub fn put_vec_test1() {
     // 测试引用
@@ -191,7 +189,7 @@ pub fn put_vec_test1() {
     assert_eq!(vec_base_expect, vec_base_act);
 }
 
-// 测试自定义结构
+// 测试集合，内部为自定义结构
 #[test]
 pub fn put_vec_test2() {
     let neo_map = NeoMap::new();
@@ -208,4 +206,18 @@ pub fn put_vec_test2() {
         vec_type_act.push(d)
     }
     assert_eq!(vec_type_expect, vec_type_act);
+}
+
+// 测试数组
+#[test]
+pub fn put_array_test1() {
+    let neo_map = NeoMap::new();
+
+    let expect_array = vec![12, 32, 3];
+
+    neo_map.put("array", &expect_array);
+
+    let act_array = neo_map.get_vec("array").unwrap();
+
+    assert_eq!(expect_array, act_array)
 }

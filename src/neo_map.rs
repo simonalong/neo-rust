@@ -16,6 +16,7 @@ use dashmap::DashMap;
 use serde_json::{Value, Number};
 use std::convert::TryInto;
 use std::ops::Index;
+use serde::{Serialize, Deserialize};
 
 /// 提供neo_map["key"]的能力
 impl Index<&str> for NeoMap {
@@ -41,6 +42,10 @@ pub struct NeoMap {
 
 pub trait Put<T> {
     fn put(&self, key: &str, value: T) -> &Self;
+}
+
+pub trait PutType<T> {
+    fn put_type(&self, key: &str, value: T) -> &Self;
 }
 
 impl NeoMap {
@@ -256,13 +261,31 @@ impl NeoMap {
     // }
 
     pub fn get_value(&self, key: &str) -> Option<Value> {
-        let v = self.data_map.get("key");
+        let v = self.data_map.get(key);
         if let Some(re) = v {
             Option::Some(re.value().clone())
         } else {
             Option::None
         }
     }
+
+    pub fn get_type<'a, T: Clone + Serialize + for<'de> serde::Deserialize<'de>>(&self, key: &str) -> Option<T> {
+        let v = self.data_map.get(key);
+        if let Some(re) = v {
+            Option::Some(serde_json::from_value(re.value().clone()).unwrap())
+        } else {
+            Option::None
+        }
+    }
+
+    // pub fn get_neo_map(&self, key: &str) -> Option<Value> {
+    //     let v = self.data_map.get("key");
+    //     if let Some(re) = v {
+    //         Option::Some(re.value().clone())
+    //     } else {
+    //         Option::None
+    //     }
+    // }
 }
 
 impl Put<i8> for NeoMap {
@@ -483,6 +506,46 @@ impl Put<NeoMap> for NeoMap {
     }
 }
 
+impl Put<&NeoMap> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &NeoMap) -> &NeoMap {
+        let data_map = &value.data_map.clone();
+        let mut map: serde_json::Map<String, Value> = serde_json::Map::new();
+        for x in data_map {
+            map.insert(x.key().clone(), x.value().clone());
+        }
+
+        self.data_map.insert(String::from(key), Value::Object(map));
+        self
+    }
+}
+
+impl<'a, T: Clone + Serialize> Put<Vec<T>> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: Vec<T>) -> &NeoMap {
+        let v = Value::Array(value.into_iter().map(|x| {
+            let s = serde_json::to_string(&x).unwrap();
+            let re_v: Value = serde_json::from_str(&s).unwrap();
+            re_v
+        }).collect());
+        self.data_map.insert(String::from(key), Value::from(v));
+        self
+    }
+}
+
+impl<'a, T: Clone + Serialize> Put<&Vec<T>> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &Vec<T>) -> &NeoMap {
+        let v = Value::Array(value.into_iter().map(|x| {
+            let s = serde_json::to_string(&x).unwrap();
+            let re_v: Value = serde_json::from_str(&s).unwrap();
+            re_v
+        }).collect());
+        self.data_map.insert(String::from(key), Value::from(v));
+        self
+    }
+}
+
 impl Put<Value> for NeoMap {
     #[inline]
     fn put(&self, key: &str, value: Value) -> &NeoMap {
@@ -491,18 +554,30 @@ impl Put<Value> for NeoMap {
     }
 }
 
-impl<'a, T: Clone + Into<Value>> Put<Vec<T>> for NeoMap {
+impl Put<&Value> for NeoMap {
     #[inline]
-    fn put(&self, key: &str, value: Vec<T>) -> &NeoMap {
-        self.data_map.insert(String::from(key), Value::from(value));
+    fn put(&self, key: &str, value: &Value) -> &NeoMap {
+        self.data_map.insert(String::from(key), value.clone());
         self
     }
 }
 
-impl<'a, T: Clone + Into<Value>> Put<&Vec<T>> for NeoMap {
+impl<'a, T: Clone + Serialize> PutType<T> for NeoMap {
     #[inline]
-    fn put(&self, key: &str, value: &Vec<T>) -> &NeoMap {
-        self.data_map.insert(String::from(key), Value::from(value.clone()));
+    fn put_type(&self, key: &str, value: T) -> &NeoMap {
+        let s = serde_json::to_string(&value).unwrap();
+        let v: Value = serde_json::from_str(&s).unwrap();
+        self.data_map.insert(String::from(key), v);
         self
     }
 }
+
+// impl<'a, T: Clone + Serialize> PutType<&T> for NeoMap {
+//     #[inline]
+//     fn put_type(&self, key: &str, value: &T) -> &NeoMap {
+//         let s = serde_json::to_string(&value).unwrap();
+//         let v: Value = serde_json::from_str(&s).unwrap();
+//         self.data_map.insert(String::from(key), v);
+//         self
+//     }
+// }

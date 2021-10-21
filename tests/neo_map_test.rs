@@ -1,5 +1,7 @@
 use neo_rust::NeoMap;
 use neo_rust::Put;
+use serde::{Deserialize, Serialize};
+use serde_json::{Value};
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct MyClass {
@@ -115,41 +117,70 @@ pub fn put_base_test2() {
     assert_eq!(false, neo_map.get_bool("false").unwrap());
 }
 
+// 测试type
 #[test]
-pub fn put_base_test3() {
+pub fn put_type_test1() {
     let neo_map = NeoMap::new();
-    let mut v = Vec::new();
-    v.push(12);
-    v.push(13);
-    neo_map.put("vec1", &v);
+
+    let type_expect = MyClass{name: String::from("v1")};
+    neo_map.put("type", type_expect);
+
+    let type_act:MyClass = neo_map.get_type("type").unwrap();
+    assert_eq!(type_expect, type_act);
+}
+
+// 测试基本类型
+#[test]
+pub fn put_vec_test1() {
+    // 测试引用
+    let neo_map = NeoMap::new();
+    let mut vec_base_expect = Vec::new();
+    vec_base_expect.push(12);
+    vec_base_expect.push(13);
+    neo_map.put("vec1", &vec_base_expect);
 
     let result = neo_map.get_vec("vec1").unwrap();
-    let mut re_v = Vec::new();
+    let mut vec_base_act = Vec::new();
     for x in result {
-        re_v.push(x.as_i64().unwrap() as i32)
+        vec_base_act.push(x.as_i64().unwrap() as i32)
     }
-    assert_eq!(v, re_v);
+    assert_eq!(vec_base_expect, vec_base_act);
 
+    // 测试直接使用
+    let neo_map = NeoMap::new();
 
-    // todo 无法执行
-    // let mut v = Vec::new();
-    // v.push(MyClass{name: String::from("v1")});
-    // v.push(MyClass{name: String::from("v3")});
-    // neo_map.put("vec2", v);
-    //
-    // let result = neo_map.get_vec("vec2").unwrap();
-    // let mut re_v = Vec::new();
-    // for x in result {
-    //     let d:MyClass = serde_json::from_value(x).unwrap();
-    //     re_v.push(d)
-    // }
-    // assert_eq!(v, re_v);
+    let mut vec_base_expect = Vec::new();
+    vec_base_expect.push(12);
+    vec_base_expect.push(13);
+    neo_map.put("vec1", &vec_base_expect);
 
-    // neo_map.put("neo_map", NeoMap::new().put("k1", "v1").put("k2", "v2"));
-    // neo_map.put("type", MyClass { name: String::from("ok") });
-
-
+    let result = neo_map.get_vec("vec1").unwrap();
+    let mut vec_base_act = Vec::new();
+    for x in result {
+        vec_base_act.push(x.as_i64().unwrap() as i32)
+    }
+    assert_eq!(vec_base_expect, vec_base_act);
 }
+
+// 测试自定义结构
+#[test]
+pub fn put_vec_test2() {
+    let neo_map = NeoMap::new();
+
+    let mut vec_type_expect = Vec::new();
+    vec_type_expect.push(MyClass{name: String::from("v1")});
+    vec_type_expect.push(MyClass{name: String::from("v3")});
+    neo_map.put("vec2", &vec_type_expect);
+
+    let result = neo_map.get_vec("vec2").unwrap();
+    let mut vec_type_act = Vec::new();
+    for x in result {
+        let d:MyClass = serde_json::from_value(x).unwrap();
+        vec_type_act.push(d)
+    }
+    assert_eq!(vec_type_expect, vec_type_act);
+}
+
 //
 // #[test]
 // pub fn put_base_test3() {

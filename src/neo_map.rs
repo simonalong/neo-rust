@@ -241,20 +241,6 @@ impl NeoMap {
         }
     }
 
-    // pub fn get_str(&self, key: &str) -> Option<&str> {
-    //     let value_ref = self.data_map.get(key);
-    //
-    //     let value = match value_ref {
-    //         Some(data) => {
-    //             data
-    //         }
-    //         _ => {
-    //             return Option::None;
-    //         }
-    //     };
-    //     value.as_str()
-    // }
-
     pub fn get_value(&self, key: &str) -> Option<Value> {
         let v = self.data_map.get(key);
         if let Some(re) = v {
@@ -596,13 +582,3 @@ impl<'a, T: Clone + Serialize> PutType<T> for NeoMap {
         self
     }
 }
-
-// impl<'a, T: Clone + Serialize> PutType<&T> for NeoMap {
-//     #[inline]
-//     fn put_type(&self, key: &str, value: &T) -> &NeoMap {
-//         let s = serde_json::to_string(&value).unwrap();
-//         let v: Value = serde_json::from_str(&s).unwrap();
-//         self.data_map.insert(String::from(key), v);
-//         self
-//     }
-// }

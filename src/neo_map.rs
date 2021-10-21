@@ -1,17 +1,3 @@
-// use serde_json::{Number, Value, Map};
-// use std::collections::HashMap;
-// use dashmap::mapref::one::{Ref, RefMut};
-// use dashmap::mapref::entry::Entry;
-// use dashmap::lock::{RwLockWriteGuard, RwLockReadGuard};
-// use dashmap::iter::{IterMut, Iter};
-// use serde::ser::SerializeMap;
-// use serde::Serialize;
-// use std::ops::Index;
-// use std::ops;
-// use dashmap::DashMap;
-// use serde_json::json;
-// use std::borrow::Cow;
-
 use dashmap::DashMap;
 use serde_json::{Value, Number};
 use std::convert::TryInto;
@@ -57,20 +43,10 @@ impl NeoMap {
         NeoMap { data_map: DashMap::new() }
     }
 
-    // pub fn of<T>(parameters: &[&T]) -> Self {
-    //     if parameters.len() == 0 {
-    //         return NeoMap { data_map: DashMap::new() }
-    //     }
-    //     if parameters.len() %2 != 0 {
-    //         panic!("Parameter please use: key, value, key, value... this parameter format")
-    //     }
+    // todo
+    // pub fn of<T>(key1: &str, value1: T, key2: &str, value2: T) -> Self {
     //     let map: DashMap<String, Value> = DashMap::new();
-    //     let mut i = 0;
-    //     while i < parameters.len() {
-    //         let value = *parameters.get(i+1).unwrap();
-    //         map.insert((*parameters.get(i).unwrap()) as String, serde_json::from_str(serde_json::to_string(value).unwrap().as_str()).unwrap());
-    //         i += 2;
-    //     }
+    //     map.insert(String::from(key1), Value::from(value1));
     //
     //     NeoMap { data_map: map }
     // }
@@ -348,6 +324,13 @@ impl Put<i64> for NeoMap {
     }
 }
 
+impl Put<isize> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: isize) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(value));
+        self
+    }
+}
 
 impl Put<&i8> for NeoMap {
     #[inline]
@@ -376,6 +359,14 @@ impl Put<&i32> for NeoMap {
 impl Put<&i64> for NeoMap {
     #[inline]
     fn put(&self, key: &str, value: &i64) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(*value));
+        self
+    }
+}
+
+impl Put<&isize> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &isize) -> &NeoMap {
         self.data_map.insert(String::from(key), Value::from(*value));
         self
     }
@@ -413,6 +404,13 @@ impl Put<u64> for NeoMap {
     }
 }
 
+impl Put<usize> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: usize) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(value));
+        self
+    }
+}
 
 impl Put<&u8> for NeoMap {
     #[inline]
@@ -446,6 +444,13 @@ impl Put<&u64> for NeoMap {
     }
 }
 
+impl Put<&usize> for NeoMap {
+    #[inline]
+    fn put(&self, key: &str, value: &usize) -> &NeoMap {
+        self.data_map.insert(String::from(key), Value::from(*value));
+        self
+    }
+}
 
 impl Put<f32> for NeoMap {
     #[inline]

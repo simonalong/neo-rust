@@ -224,11 +224,19 @@ pub fn put_array_test1() {
 
 
 #[test]
-pub fn of_test1() {
+pub fn println_test1() {
     let neo_map = NeoMap::new();
 
     neo_map.put("k1", "v");
     neo_map.put("k2", "v");
 
     println!("{:?}", neo_map);
+}
+
+
+#[test]
+pub fn of_test1() {
+    // let neo_map = NeoMap::of(&["k1", "v1", "k2", "v2"]);
+    //
+    // println!("{:?}", neo_map);
 }

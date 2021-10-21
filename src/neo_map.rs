@@ -10,24 +10,6 @@ use serde::de::DeserializeOwned;
 use crate::ObjectUtil;
 use std::any::Any;
 
-/// 提供neo_map["key"]的能力
-impl Index<&str> for NeoMap {
-    type Output = str;
-
-    fn index(&self, key: &str) -> &str {
-        // return &(self.get(key).unwrap())
-
-        "sdf"
-
-        // let v = self.data_map.get(key);
-        // if let Some(re) = v {
-        //     re.value()
-        // } else {
-        //     panic!("not value")
-        // }
-    }
-}
-
 #[derive(Debug)]
 pub struct NeoMap {
     data_map: DashMap<String, Value>

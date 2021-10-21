@@ -221,3 +221,14 @@ pub fn put_array_test1() {
 
     assert_eq!(expect_array, act_array)
 }
+
+
+#[test]
+pub fn of_test1() {
+    let neo_map = NeoMap::new();
+
+    neo_map.put("k1", "v");
+    neo_map.put("k2", "v");
+
+    println!("{:?}", neo_map);
+}

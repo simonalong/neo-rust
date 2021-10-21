@@ -17,6 +17,9 @@ use serde_json::{Value, Number};
 use std::convert::TryInto;
 use std::ops::Index;
 use serde::{Serialize, Deserialize};
+use std::fmt::Display;
+use serde::__private::Formatter;
+use std::fmt;
 
 /// 提供neo_map["key"]的能力
 impl Index<&str> for NeoMap {
@@ -54,12 +57,24 @@ impl NeoMap {
         NeoMap { data_map: DashMap::new() }
     }
 
-    // pub fn of(&[&T]) -> Self {
-    //     NeoMap { data_map: DashMap::new() }
+    // pub fn of<T>(parameters: &[&T]) -> Self {
+    //     if parameters.len() == 0 {
+    //         return NeoMap { data_map: DashMap::new() }
+    //     }
+    //     if parameters.len() %2 != 0 {
+    //         panic!("Parameter please use: key, value, key, value... this parameter format")
+    //     }
+    //     let map: DashMap<String, Value> = DashMap::new();
+    //     let mut i = 0;
+    //     while i < parameters.len() {
+    //         let value = *parameters.get(i+1).unwrap();
+    //         map.insert((*parameters.get(i).unwrap()) as String, serde_json::from_str(serde_json::to_string(value).unwrap().as_str()).unwrap());
+    //         i += 2;
+    //     }
+    //
+    //     NeoMap { data_map: map }
     // }
 
-
-    //
     pub fn contain_key(&self, key: &str) -> bool {
         self.data_map.contains_key(key)
     }
@@ -281,6 +296,7 @@ impl NeoMap {
     }
 }
 
+// 支持表达式：==
 impl PartialEq for NeoMap {
     fn eq(&self, other: &Self) -> bool {
         let map = &self.data_map;
@@ -297,6 +313,7 @@ impl PartialEq for NeoMap {
     }
 }
 
+// 支持表达式：!=
 impl Eq for NeoMap {}
 
 impl Put<i8> for NeoMap {

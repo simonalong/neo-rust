@@ -149,14 +149,6 @@ impl ObjectUtil {
         TypeId::of::<char>() == value.type_id()
     }
 
-    pub fn type_is_vec<T>(value: T) -> bool
-        where
-            T: Any,
-            V: Any
-    {
-        TypeId::of::<Vec<V>>() == value.type_id()
-    }
-
     pub fn type_is_neo_map<T>(value: T) -> bool where T: Any {
         TypeId::of::<NeoMap>() == value.type_id()
     }

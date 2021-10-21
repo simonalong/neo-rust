@@ -1,11 +1,12 @@
 use dashmap::DashMap;
-use serde_json::{Value, Number};
+use serde_json::{Value, Number, Error};
 use std::convert::TryInto;
 use std::ops::Index;
-use serde::{Serialize, Deserialize};
+use serde::{Serialize, Deserialize, de};
 use std::fmt::Display;
 use serde::__private::Formatter;
 use std::fmt;
+use serde::de::DeserializeOwned;
 
 /// 提供neo_map["key"]的能力
 impl Index<&str> for NeoMap {
@@ -61,6 +62,22 @@ impl NeoMap {
 
     pub fn to_json_string(&self) -> String {
         serde_json::to_string(&self.data_map).unwrap()
+    }
+
+    pub fn as_type<'a, T>(&self) -> serde_json::Result<T>
+        where T: for<'de> serde::Deserialize<'de>
+    {
+        let str = serde_json::to_string(&self.data_map).unwrap();
+        return serde_json::from_str(str.as_str());
+    }
+
+    pub fn get_type1<'a, T: Clone + Serialize + for<'de> serde::Deserialize<'de>>(&self, key: &str) -> Option<T> {
+        let v = self.data_map.get(key);
+        if let Some(re) = v {
+            Option::Some(serde_json::from_value(re.value().clone()).unwrap())
+        } else {
+            Option::None
+        }
     }
 }
 

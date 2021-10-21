@@ -1,5 +1,6 @@
 use neo_rust::NeoMap;
 use neo_rust::Put;
+use neo_rust::PutType;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value};
 
@@ -120,13 +121,41 @@ pub fn put_base_test2() {
 // 测试type
 #[test]
 pub fn put_type_test1() {
+    // 实际值
     let neo_map = NeoMap::new();
 
     let type_expect = MyClass{name: String::from("v1")};
-    neo_map.put("type", type_expect);
+    let type_expect1 = MyClass{name: String::from("v1")};
+    neo_map.put_type("type", type_expect1);
 
     let type_act:MyClass = neo_map.get_type("type").unwrap();
     assert_eq!(type_expect, type_act);
+
+    // 引用值
+    let neo_map = NeoMap::new();
+
+    let type_expect = MyClass{name: String::from("v1")};
+    neo_map.put_type("type", &type_expect);
+
+    let type_act:MyClass = neo_map.get_type("type").unwrap();
+    assert_eq!(type_expect, type_act);
+}
+
+// 测试neo_map
+#[test]
+pub fn put_map_test1() {
+    // 实际值
+    let neo_map = NeoMap::new();
+
+    let data = NeoMap::new();
+    data.put("key", "v1").put("k2", "v2");
+    neo_map.put("type", &data);
+
+    let type_act:NeoMap = neo_map.get_neo_map("type").unwrap();
+
+    println!("{:?}", type_act);
+
+    assert_eq!(data.to_json_string(), type_act.to_json_string());
 }
 
 // 测试基本类型
@@ -180,17 +209,3 @@ pub fn put_vec_test2() {
     }
     assert_eq!(vec_type_expect, vec_type_act);
 }
-
-//
-// #[test]
-// pub fn put_base_test3() {
-//     let inner_map = NeoMap::new();
-//     inner_map.put("k1", "v1");
-//     inner_map.put("k2", "v2");
-//
-//     let neo_map = NeoMap::new();
-//     neo_map.put("outer", inner_map);
-//     neo_map.put("simple", "sdf");
-//
-//     println!("{}", neo_map.get("simple").unwrap())
-// }

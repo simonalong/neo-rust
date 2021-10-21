@@ -19,7 +19,7 @@ serde_json = "1.0"
 sqlx = { version = "0.5.9", features = ["mysql", "postgres", "sqlite", "runtime-tokio-rustls"] }
 
 # concurrent hashmap
-dashmap = "4.0.2"
+dashmap = { version = "4.0.2", features = [ "serde" ] }
 
 flurry = "0.3.1"
 

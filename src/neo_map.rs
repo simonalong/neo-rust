@@ -36,6 +36,7 @@ impl Index<&str> for NeoMap {
     }
 }
 
+#[derive(Debug)]
 pub struct NeoMap {
     data_map: DashMap<String, Value>
 }
@@ -67,35 +68,9 @@ impl NeoMap {
         self.data_map.remove(key);
     }
 
-
-//
-
-// pub fn get_i64(&self, key: &str) -> Box<i64> {
-//     Box::new(self.data_map.get(key).unwrap().as_i64().unwrap().clone())
-// }
-//
-//     fn get_i8(&self, key:&str);
-//     fn get_i16(&self, key:&str);
-//     fn get_i32(&self, key:&str);
-//     fn get_i64(&self, key:&str);
-//     fn get_i128(&self, key:&str);
-//
-//     fn get_u8(&self, key:&str);
-//     fn get_u16(&self, key:&str);
-//     fn get_u32(&self, key:&str);
-//     fn get_u64(&self, key:&str);
-//     fn get_u128(&self, key:&str);
-
-//     fn get_f32(&self, key:&str);
-//     fn get_f64(&self, key:&str);
-//
-//     fn get_bool(&self, key:&str);
-//
-//     fn get_vec(&self, key:&str);
-//
-//     fn get_neo_map(&self, key:&str);
-
-//     fn get_type(&self, key:&str);
+    pub fn to_json_string(&self) -> String {
+        serde_json::to_string(&self.data_map).unwrap()
+    }
 }
 
 impl NeoMap {
@@ -278,14 +253,26 @@ impl NeoMap {
         }
     }
 
-    // pub fn get_neo_map(&self, key: &str) -> Option<Value> {
-    //     let v = self.data_map.get("key");
-    //     if let Some(re) = v {
-    //         Option::Some(re.value().clone())
-    //     } else {
-    //         Option::None
-    //     }
-    // }
+    pub fn get_neo_map(&self, key: &str) -> Option<NeoMap> {
+        let v = self.data_map.get(key);
+        if let Some(re) = v {
+            if let Some(d) = re.as_object() {
+                let neo_map = NeoMap::new();
+                for x in d {
+                    neo_map.put(x.0, x.1);
+                }
+
+                return Option::Some(neo_map);
+            }
+        }
+        Option::None
+    }
+
+    pub fn put_all(&self, dash_map: DashMap<String, Value>) {
+        for x in dash_map {
+            self.data_map.insert(x.0, x.1);
+        }
+    }
 }
 
 impl Put<i8> for NeoMap {
@@ -509,7 +496,7 @@ impl Put<NeoMap> for NeoMap {
 impl Put<&NeoMap> for NeoMap {
     #[inline]
     fn put(&self, key: &str, value: &NeoMap) -> &NeoMap {
-        let data_map = &value.data_map.clone();
+        let data_map = &value.data_map;
         let mut map: serde_json::Map<String, Value> = serde_json::Map::new();
         for x in data_map {
             map.insert(x.key().clone(), x.value().clone());

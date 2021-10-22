@@ -1,5 +1,5 @@
 use sqlx::{Database, Pool, mysql::{MySqlPoolOptions, MySqlQueryResult, MySqlRow}, pool::PoolOptions, postgres::PgPoolOptions, sqlite::SqlitePoolOptions, MySql};
-use thread_local::ThreadLocal;
+// use thread_local::ThreadLocal;
 use crate::NeoMap;
 use serde_json::Value;
 use std::cell::RefCell;
@@ -8,17 +8,10 @@ pub struct Neo {
     connect_pool: Pool<MySql>,
 }
 
-pub enum DbType {
-    Mysql,
-    Postgres,
-    Sqlite,
-    Mssql,
-}
-
 impl Neo {
 
-    pub thread_local! {
-        static db_type: RefCell<String> = RefCell::new(String::new());
+    thread_local! {
+        pub static db_type: RefCell<String> = RefCell::new(String::new());
     }
 
     pub async fn connect(uri: &str) -> Neo {
@@ -27,6 +20,7 @@ impl Neo {
         }
 
         if uri.to_string().starts_with("mysql") {
+            println!("-----{}", &uri);
             Neo::db_type.with(|e| (*(e.borrow_mut()) = String::from("mysql")));
 
             return Neo {

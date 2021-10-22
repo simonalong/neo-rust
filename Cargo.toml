@@ -20,6 +20,3 @@ sqlx = { version = "0.5.9", features = ["mysql", "postgres", "sqlite", "mssql", 
 
 # concurrent hashmap
 dashmap = { version = "4.0.2", features = [ "serde" ] }
-
-# 本地线程
-thread_local = "1.1.3"

@@ -5,8 +5,8 @@ mod util;
 mod sql_builder;
 
 pub use neo::Neo;
-pub use neo::DbType;
 pub use neo_map::NeoMap;
 pub use neo_map::Put;
 pub use neo_map::PutType;
 pub use util::ObjectUtil;
+pub use sql_builder::SqlBuilder;

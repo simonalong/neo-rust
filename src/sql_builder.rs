@@ -1,29 +1,38 @@
-
-use crate::Neo;
+use crate::{Neo, NeoMap};
 use crate::constants::*;
 use std::thread::LocalKey;
-use string_join::Join;
+use serde_json::Value;
 
 pub struct SqlBuilder;
 
 impl SqlBuilder {
 
-    // pub fn build_sql(tableName: &str, valueMap: &NeoMap) -> String {
-    //     "insert into " + tableName + " (" + buildInsertTable(valueMap.keySet()) + ") values (" + buildInsertValues(valueMap) + ")";
-    // }
+    // 拼接的sql，比如：insert into table1 (`age`, `name`) values (?, ?)
+    pub fn build_sql(table_name: &str, value_map: NeoMap) -> String {
+        let mut sql = "insert into ".to_string();
+        sql += table_name;
+        sql += " (";
+        sql += &SqlBuilder::build_keys(value_map.keys()).as_str();
+        sql += ") values (";
+        sql += &SqlBuilder::build_values(value_map.keys()).as_str();
+        sql += ")";
+
+        sql
+    }
 
     // `name`, `group`
     pub fn build_keys(keys: Vec<String>) -> String {
-        let data = keys.iter().map(|e|SqlBuilder::to_db_field(e)).collect();
-        // todo
+        let arr: Vec<String> = keys.into_iter().map(|e| SqlBuilder::to_db_field(e)).collect();
+        return arr.join(", ");
     }
 
-    pub fn build_values() {
-
+    pub fn build_values(keys: Vec<String>) -> String {
+        let arr: Vec<&str> = keys.into_iter().map(|e| "?").collect();
+        return arr.join(", ");
     }
 
-    pub fn to_db_field(column: &String) -> &String {
-        let db_type = Neo::db_type.with(|e|e.clone().take());
+    pub fn to_db_field(column: String) -> String {
+        let db_type = Neo::db_type.with(|e| e.clone().take());
         if db_type == POSTGRES {
             return column;
         }
@@ -36,6 +45,6 @@ impl SqlBuilder {
         s1 += DOM;
         s1 += &column.as_str();
         s1 += DOM;
-        return &String::from(s1);
+        return String::from(s1);
     }
 }

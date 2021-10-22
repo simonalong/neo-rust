@@ -238,3 +238,24 @@ struct AsClass{
     name: String,
     age: i32
 }
+
+
+#[test]
+pub fn keys_test() {
+    let neo_map = NeoMap::new();
+
+    neo_map.put("k1", "v");
+    neo_map.put("k2", "v");
+
+    println!("{:?}", neo_map.keys());
+}
+
+#[test]
+pub fn values_test() {
+    let neo_map = NeoMap::new();
+
+    neo_map.put("k1", "v");
+    neo_map.put("k2", "v");
+
+    println!("{:?}", neo_map.values());
+}

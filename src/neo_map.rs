@@ -1,6 +1,7 @@
 use dashmap::DashMap;
 use serde_json::Value;
 use serde::Serialize;
+use std::collections::hash_map::Keys;
 
 #[derive(Debug)]
 pub struct NeoMap {
@@ -19,6 +20,23 @@ impl NeoMap {
     pub fn new() -> Self {
         NeoMap { data_map: DashMap::new() }
     }
+
+    pub fn keys(&self) -> Vec<String> {
+        let mut keys = Vec::new();
+        for x in &self.data_map {
+            keys.push(x.key().clone());
+        }
+        keys
+    }
+
+    pub fn values(&self) -> Vec<Value> {
+        let mut values = Vec::new();
+        for x in &self.data_map {
+            values.push(x.value().clone());
+        }
+        values
+    }
+
 
     pub fn contain_key(&self, key: &str) -> bool {
         self.data_map.contains_key(key)

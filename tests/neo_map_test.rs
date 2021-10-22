@@ -222,7 +222,6 @@ pub fn put_array_test1() {
     assert_eq!(expect_array, act_array)
 }
 
-
 #[test]
 pub fn println_test1() {
     let neo_map = NeoMap::new();
@@ -238,7 +237,6 @@ struct AsClass{
     name: String,
     age: i32
 }
-
 
 #[test]
 pub fn keys_test() {

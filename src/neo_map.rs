@@ -37,7 +37,6 @@ impl NeoMap {
         values
     }
 
-
     pub fn contain_key(&self, key: &str) -> bool {
         self.data_map.contains_key(key)
     }
@@ -214,7 +213,7 @@ impl NeoMap {
             }
         };
         if let Some(vec_value) = value.as_array() {
-            Option::Some(vec_value.into_iter().map(|x|{
+            Option::Some(vec_value.into_iter().map(|x| {
                 serde_json::from_value(x.clone()).unwrap()
             }).collect())
         } else {

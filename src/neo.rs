@@ -1,20 +1,37 @@
 use sqlx::{Database, Pool, mysql::{MySqlPoolOptions, MySqlQueryResult, MySqlRow}, pool::PoolOptions, postgres::PgPoolOptions, sqlite::SqlitePoolOptions, MySql};
-
+use thread_local::ThreadLocal;
 use crate::NeoMap;
 use serde_json::Value;
+use std::cell::RefCell;
 
 pub struct Neo {
-    connect_pool: Pool<MySql>
+    connect_pool: Pool<MySql>,
+}
+
+pub enum DbType {
+    Mysql,
+    Postgres,
+    Sqlite,
+    Mssql,
 }
 
 impl Neo {
+
+    pub thread_local! {
+        static db_type: RefCell<String> = RefCell::new(String::new());
+    }
+
     pub async fn connect(uri: &str) -> Neo {
         if uri == "" {
             panic!("uri cannot empty")
         }
 
         if uri.to_string().starts_with("mysql") {
-            return Neo { connect_pool: MySqlPoolOptions::new().connect(uri).await.unwrap() };
+            Neo::db_type.with(|e| (*(e.borrow_mut()) = String::from("mysql")));
+
+            return Neo {
+                connect_pool: MySqlPoolOptions::new().connect(uri).await.unwrap(),
+            };
             // } else if uri.to_string().starts_with("postgres") {
             //     return &Neo{connect_pool: PgPoolOptions::new().connect(uri).await?}
             // } else if uri.to_string().starts_with("sqlite") {

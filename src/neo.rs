@@ -1,6 +1,6 @@
 use sqlx::{Database, Pool, mysql::{MySqlPoolOptions, MySqlQueryResult, MySqlRow}, pool::PoolOptions, postgres::PgPoolOptions, sqlite::SqlitePoolOptions, MySql};
 // use thread_local::ThreadLocal;
-use crate::NeoMap;
+use crate::{NeoMap, SqlBuilder};
 use serde_json::Value;
 use std::cell::RefCell;
 
@@ -39,11 +39,26 @@ impl Neo {
         &self.connect_pool
     }
 
-    pub async fn insert(&self, tableName: &str, dataMap: &NeoMap) {
+    pub async fn insert(&self, table_name: &str, value_map: NeoMap) {
         println!("start 1");
-        let sql = "insert into demo1(`name`, `group`) values (?, ?)";
-        let result = sqlx::query(sql).bind("name1").bind("group1").execute(self.get_connect_pool()).await;
+        let sql = SqlBuilder::build_sql_of_insert(table_name, value_map);
+
+        Object id = execute(false, () -> generateInsertSqlPair(tableName, valueMap.clone()), this::executeInsert);
+        Pair<String, ? extends Class<?>> keyAndType = db.getPrimaryKeyAutoIncNameAndType(tableName);
+
+
+        let result = sqlx::query(sql.as_str()).bind("name1").bind("group1").execute(self.get_connect_pool()).await;
         println!("end 1");
+    }
+
+    fn generate_insert_pair(table_name: &str, value_map: NeoMap) -> (&str, ) {
+        // valueMap = filterColumn(tableName, valueMap);
+        return new Pair<>(InsertSqlBuilder.build(tenantHandler, tableName, valueMap), new ArrayList<>(valueMap.values()));
+    }
+
+    private Pair<String, List<Object>> generateInsertSqlPair(String tableName, NeoMap valueMap) {
+    valueMap = filterColumn(tableName, valueMap);
+    return new Pair<>(InsertSqlBuilder.build(tenantHandler, tableName, valueMap), new ArrayList<>(valueMap.values()));
     }
 }
 

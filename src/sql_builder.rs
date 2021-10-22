@@ -8,7 +8,7 @@ pub struct SqlBuilder;
 impl SqlBuilder {
 
     // 拼接的sql，比如：insert into table1 (`age`, `name`) values (?, ?)
-    pub fn build_sql(table_name: &str, value_map: NeoMap) -> String {
+    pub fn build_sql_of_insert(table_name: &str, value_map: NeoMap) -> String {
         let mut sql = "insert into ".to_string();
         sql += table_name;
         sql += " (";
@@ -16,7 +16,6 @@ impl SqlBuilder {
         sql += ") values (";
         sql += &SqlBuilder::build_values(value_map.keys()).as_str();
         sql += ")";
-
         sql
     }
 

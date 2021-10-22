@@ -21,6 +21,6 @@ fn test3() {
     value_map.put("name", "name1");
     value_map.put("group", "group1");
 
-    let sql = SqlBuilder::build_sql("demo1", value_map);
+    let sql = SqlBuilder::build_sql_of_insert("demo1", value_map);
     assert_eq!("insert into demo1 (`name`, `group`) values (?, ?)", sql)
 }

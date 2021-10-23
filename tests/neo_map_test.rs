@@ -257,3 +257,14 @@ pub fn values_test() {
 
     println!("{:?}", neo_map.values());
 }
+
+
+// #[test]
+// pub fn get_test() {
+//     let neo_map = NeoMap::new();
+//
+//     neo_map.put("k1", "v");
+//     neo_map.put("k2", "v");
+//
+//     println!("{:?}", neo_map.get_original("k1"));
+// }

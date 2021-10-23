@@ -1,10 +1,13 @@
-use sqlx::{Database, Pool, MySql};
-use sqlx::mysql::MySqlPoolOptions;
+use sqlx::{Database, Pool, MySql, Row, Column};
+use sqlx::mysql::{MySqlPoolOptions, MySqlRow};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::sqlite::SqlitePoolOptions;
 use neo_rust::{Neo, NeoMap, Put};
 use std::thread;
 use std::time::Duration;
+use serde_json::Value;
+use std::any::Any;
+use std::ops::Deref;
 
 #[tokio::test]
 async fn test() {
@@ -21,12 +24,52 @@ async fn test() {
     println!("{:?}", result);
 }
 
+// #[tokio::test]
+// async fn test_insert() {
+//     let neo = Neo::connect("mysql://neo_test:neo@Test123@localhost:3306/demo1").await;
+//
+//     let data = NeoMap::new();
+//     data.put("name", "n");
+//     data.put("group", "g");
+//     neo.insert("demo1", &data).await;
+// }
+
 #[tokio::test]
 async fn test_insert() {
     let neo = Neo::connect("mysql://neo_test:neo@Test123@localhost:3306/demo1").await;
 
-    let data = NeoMap::new();
-    data.put("name", "n");
-    data.put("group", "g");
-    neo.insert("demo1", &data).await;
+    let sql = "select * from demo1 where id > ? limit 1";
+
+    let result = sqlx::query(sql).bind(2).fetch_all(neo.get_connect_pool()).await;
+    println!("x ====  {:#?}", result);
+    let it = result.iter();
+    for x in it {
+        for v in x {
+            generate(v);
+
+            // let d: &MySqlRow = v;
+            // v.columns().into_iter().for_each(|e|{
+            //     println!(" = {}", e.name());
+            // });
+            // println!("v ====  {:#?}", v);
+            // println!("v.id ====  {}", v.get::<i8, &str>("id"));
+            // println!("v.id ====  {}", v.get::<i16, &str>("id"));
+            // println!("v.id ====  {}", v.get::<i32, &str>("id"));
+            // println!("v.id ====  {}", v.get::<i64, &str>("id"));
+            //
+            // println!("v.name ====  {}", v.get::<&str, &str>("name"));
+            // println!("v.group ====  {}", v.get::<String, &str>("group"));
+        }
+    }
 }
+
+pub fn generate(row: &MySqlRow) -> NeoMap {
+    let columns:Vec<&str> = row.columns().into_iter().map(|e|e.name()).collect();
+
+    for x in columns {
+        println!("{}", x);
+    }
+
+    NeoMap::new()
+}
+

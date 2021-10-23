@@ -267,6 +267,20 @@ impl NeoMap {
         Option::None
     }
 
+    // pub fn get_original<'a>(&self, key: &str) -> Box<&'a dyn Any> {
+    //     let value_ref = self.data_map.get(key);
+    //
+    //     let value = match value_ref {
+    //         Some(data) => {
+    //             data
+    //         }
+    //         _ => {
+    //             return Box::new(&0);
+    //         }
+    //     };
+    //     Box::new(value.value())
+    // }
+
     pub fn put_all(&self, dash_map: DashMap<String, Value>) {
         for x in dash_map {
             self.data_map.insert(x.0, x.1);

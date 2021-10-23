@@ -40,28 +40,17 @@ impl Neo {
     }
 
     pub async fn insert(&self, table_name: &str, value_map: NeoMap) {
-        println!("start 1");
-        let sql = SqlBuilder::build_sql_of_insert(table_name, value_map);
-
-        Object id = execute(false, () -> generateInsertSqlPair(tableName, valueMap.clone()), this::executeInsert);
-        Pair<String, ? extends Class<?>> keyAndType = db.getPrimaryKeyAutoIncNameAndType(tableName);
-
-
-        let result = sqlx::query(sql.as_str()).bind("name1").bind("group1").execute(self.get_connect_pool()).await;
+        // let (sql, values) = SqlBuilder::generate_insert_pair(table_name, value_map);
+        //
+        // let query = sqlx::query(sql.as_str());
+        // for v in values {
+        //     query.bind()
+        // }
+        //
+        // let result = sqlx::query(sql.as_str()).bind("name1").bind("group1").execute(self.get_connect_pool()).await;
         println!("end 1");
     }
-
-    fn generate_insert_pair(table_name: &str, value_map: NeoMap) -> (&str, ) {
-        // valueMap = filterColumn(tableName, valueMap);
-        return new Pair<>(InsertSqlBuilder.build(tenantHandler, tableName, valueMap), new ArrayList<>(valueMap.values()));
-    }
-
-    private Pair<String, List<Object>> generateInsertSqlPair(String tableName, NeoMap valueMap) {
-    valueMap = filterColumn(tableName, valueMap);
-    return new Pair<>(InsertSqlBuilder.build(tenantHandler, tableName, valueMap), new ArrayList<>(valueMap.values()));
-    }
 }
-
 
 // trait Cqrs {
 //     fn insert();

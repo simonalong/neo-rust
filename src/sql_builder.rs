@@ -7,6 +7,10 @@ pub struct SqlBuilder;
 
 impl SqlBuilder {
 
+    // pub fn generate_insert_pair(table_name: &str, value_map: NeoMap) -> (String, Vec<Value>) {
+    //     (SqlBuilder::build_sql_of_insert(table_name, value_map), value_map.values())
+    // }
+
     // 拼接的sql，比如：insert into table1 (`age`, `name`) values (?, ?)
     pub fn build_sql_of_insert(table_name: &str, value_map: NeoMap) -> String {
         let mut sql = "insert into ".to_string();

@@ -6,7 +6,7 @@ use neo_rust::{Neo, NeoMap, Put};
 use std::thread;
 use std::time::Duration;
 use serde_json::Value;
-use std::any::Any;
+use std::any::{Any, TypeId};
 use std::ops::Deref;
 
 #[tokio::test]
@@ -41,7 +41,7 @@ async fn test_insert() {
     let sql = "select * from demo1 where id > ? limit 1";
 
     let result = sqlx::query(sql).bind(2).fetch_all(neo.get_connect_pool()).await;
-    println!("x ====  {:#?}", result);
+    // println!("x ====  {:#?}", result);
     let it = result.iter();
     for x in it {
         for v in x {
@@ -64,12 +64,33 @@ async fn test_insert() {
 }
 
 pub fn generate(row: &MySqlRow) -> NeoMap {
-    let columns:Vec<&str> = row.columns().into_iter().map(|e|e.name()).collect();
+    let columns: Vec<&str> = row.columns().into_iter().map(|e| e.name()).collect();
 
+    let value_map = NeoMap::new();
     for x in columns {
-        println!("{}", x);
+        let type_id = get_type_id_from_column(x);
+
+        let value = match type_id {
+            TypeId::of::<String>() => Value::from(row.get::<String, &str>(x)),
+            TypeId::of::<&str>() => Value::from(row.get::<&str, &str>(x)),
+            TypeId::of::<i8>() => Value::from(row.get::<i8, &str>(x)),
+            TypeId::of::<i16>() => Value::from(row.get::<i16, &str>(x)),
+            TypeId::of::<i32>() => Value::from(row.get::<i32, &str>(x)),
+            TypeId::of::<i64>() => Value::from(row.get::<i64, &str>(x)),
+            TypeId::of::<u8>() => Value::from(row.get::<u8, &str>(x)),
+            TypeId::of::<u16>() => Value::from(row.get::<u16, &str>(x)),
+            TypeId::of::<u32>() => Value::from(row.get::<u32, &str>(x)),
+            TypeId::of::<u64>() => Value::from(row.get::<u64, &str>(x)),
+            TypeId::of::<f32>() => Value::from(row.get::<f32, &str>(x)),
+            TypeId::of::<f64>() => Value::from(row.get::<f64, &str>(x)),
+            TypeId::of::<isize>() => Value::from(row.get::<isize, &str>(x)),
+            TypeId::of::<usize>() => Value::from(row.get::<usize, &str>(x)),
+            TypeId::of::<bool>() => Value::from(row.get::<bool, &str>(x))
+        };
+
+        value_map.put(x, value);
     }
 
-    NeoMap::new()
+    value_map
 }
 

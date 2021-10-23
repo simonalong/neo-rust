@@ -38,10 +38,6 @@ impl ObjectUtil {
             return true;
         } else if let Some(_) = value_any.downcast_ref::<&str>() {
             return true;
-        } else if let Some(_) = value_any.downcast_ref::<isize>() {
-            return true;
-        } else if let Some(_) = value_any.downcast_ref::<usize>() {
-            return true;
         } else if let Some(_) = value_any.downcast_ref::<char>() {
             return true;
         } else if let Some(_) = value_any.downcast_ref::<()>() {

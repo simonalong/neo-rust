@@ -38,14 +38,15 @@ async fn test() {
 async fn test_insert() {
     let neo = Neo::connect("mysql://neo_test:neo@Test123@localhost:3306/demo1").await;
 
-    let sql = "select * from demo1 where id > ? limit 1";
+    // let sql = "select demo1.`name`, demo2.`name` from demo1 as demo1 where id > ? left join demo2 on demo1.`id` = demo2.`id` limit 1";
+    let sql = "select d1.`name`, d2.`name` from demo1 as d1 left join demo2 as d2 on d1.`id` = d2.`id`  where d1.`id` > 1 limit 1";
 
     let result = sqlx::query(sql).bind(2).fetch_all(neo.get_connect_pool()).await;
     // println!("x ====  {:#?}", result);
     let it = result.iter();
     for x in it {
         for v in x {
-            generate(v);
+            generate("demo1", v);
 
             // let d: &MySqlRow = v;
             // v.columns().into_iter().for_each(|e|{
@@ -63,12 +64,12 @@ async fn test_insert() {
     }
 }
 
-pub fn generate(row: &MySqlRow) -> NeoMap {
+pub fn generate(table_name: &str, row: &MySqlRow) -> NeoMap {
     let columns: Vec<&str> = row.columns().into_iter().map(|e| e.name()).collect();
 
     let value_map = NeoMap::new();
     for x in columns {
-        let type_id = get_type_id_from_column(x);
+        let type_id = get_type_id_from_column(table_name, x);
 
         let value = match type_id {
             TypeId::of::<String>() => Value::from(row.get::<String, &str>(x)),
@@ -87,10 +88,13 @@ pub fn generate(row: &MySqlRow) -> NeoMap {
             TypeId::of::<usize>() => Value::from(row.get::<usize, &str>(x)),
             TypeId::of::<bool>() => Value::from(row.get::<bool, &str>(x))
         };
-
         value_map.put(x, value);
     }
 
     value_map
+}
+
+pub fn get_type_id_from_column(table_name: &str, column_name: &str) {
+
 }
 

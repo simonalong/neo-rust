@@ -9,6 +9,8 @@ use serde_json::Value;
 use std::any::{Any, TypeId};
 use std::ops::Deref;
 
+
+
 #[tokio::test]
 async fn test() {
     let neo = Neo::connect("mysql://neo_test:neo@Test123@localhost:3306/demo1").await;
@@ -94,7 +96,12 @@ pub fn generate(table_name: &str, row: &MySqlRow) -> NeoMap {
     value_map
 }
 
-pub fn get_type_id_from_column(table_name: &str, column_name: &str) {
-
+pub fn get_type_id_from_column(table_name: &str, column_name: &str) -> TypeId {
+    // todo
+    if column_name == "name" || column_name == "group" {
+        return TypeId::of::<String>();
+    } else {
+        return TypeId::of::<i64>();
+    }
 }
 

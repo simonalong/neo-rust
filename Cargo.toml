@@ -20,3 +20,14 @@ sqlx = { version = "0.5.9", features = ["mysql", "postgres", "sqlite", "mssql", 
 
 # concurrent hashmap
 dashmap = { version = "4.0.2", features = [ "serde" ] }
+
+# 全局静态变量
+lazy_static = "1.4.0"
+
+time = "0.3.3"
+
+chrono = "0.4.19"
+
+bigdecimal = "0.3.0"
+
+json = "0.12.4"

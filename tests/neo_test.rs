@@ -2,7 +2,7 @@ use sqlx::{Database, Pool, MySql, Row, Column, TypeInfo};
 use sqlx::mysql::{MySqlPoolOptions, MySqlRow};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::sqlite::SqlitePoolOptions;
-use neo_rust::{Neo, NeoMap, Put};
+use neo_rust::{Neo, NeoMap, Put, MYSQL_TYPE_RUST_MAP};
 use std::thread;
 use std::time::Duration;
 use serde_json::Value;
@@ -48,91 +48,52 @@ async fn test_insert() {
     let it = result.iter();
     for x in it {
         for v in x {
-            // let neo_map = generate("demo1", v);
-            // println!(" neo map  === {:?}", neo_map);
-
-            // let d: &MySqlRow = v;
-            // v.columns().into_iter().for_each(|e|{
-            //     println!(" = {}", e.name());
-            // });
-            // println!("v ====  {:#?}", v);
-            // println!("v.id ====  {:?}", v.type_id());
-            // println!("v.id ====  {}", v.column("name").);
-
-            // let m = String::from("asdf");
-            let s = v.columns();
-            for x in s {
-                // println!("v.type_info ====  {:#?}", x.type_info());
-                let a = x.type_info();
-                println!("v.type_info ====  {}", a.name());
-            }
-            // println!("v.id ====  {:#?}", v.columns());
-            // println!("v.id ====  {:?}", v().type_id());
-            // println!("v.id ====  {}", v.get::<i16, &str>("id"));
-            // println!("v.id ====  {}", v.get::<i32, &str>("id"));
-            // println!("v.id ====  {}", v.get::<i64, &str>("id"));
-            //
-            // println!("v.name ====  {}", v.get::<&str, &str>("name"));
-            // println!("v.group ====  {}", v.get::<String, &str>("group"));
+            let neo_map = generate(v);
+            println!(" neo map  === {:?}", neo_map);
         }
     }
 }
 
-pub fn generate(table_name: &str, row: &MySqlRow) -> NeoMap {
-    let columns: Vec<&str> = row.columns().into_iter().map(|e| e.name()).collect();
+pub fn generate(row: &MySqlRow) -> NeoMap {
+    let columns = row.columns();
 
     let value_map = NeoMap::new();
-    for x in columns {
-        println!("column: {}", x);
-        let type_id = get_type_id_from_column(table_name, x);
-        println!("type_id: {:?}", type_id);
-
+    for column in columns {
+        let column_name = column.name();
+        let type_id = *(MYSQL_TYPE_RUST_MAP.get(column.type_info().name()).unwrap());
         let mut value:Value = Default::default();
         if type_id == TypeId::of::<String>() {
-            value = Value::from(row.get::<String, &str>(x))
+            value = Value::from(row.get::<String, &str>(column_name))
         } else if type_id == TypeId::of::<&str>() {
-            value = Value::from(row.get::<&str, &str>(x))
+            value = Value::from(row.get::<&str, &str>(column_name))
         } else if type_id == TypeId::of::<i8>() {
-            value = Value::from(row.get::<i8, &str>(x))
+            value = Value::from(row.get::<i8, &str>(column_name))
         } else if type_id == TypeId::of::<i16>() {
-            value = Value::from(row.get::<i16, &str>(x))
+            value = Value::from(row.get::<i16, &str>(column_name))
         } else if type_id == TypeId::of::<i32>() {
-            value = Value::from(row.get::<i32, &str>(x))
+            value = Value::from(row.get::<i32, &str>(column_name))
         } else if type_id == TypeId::of::<i64>() {
-            value = Value::from(row.get::<i64, &str>(x))
+            value = Value::from(row.get::<i64, &str>(column_name))
         } else if type_id == TypeId::of::<u8>() {
-            value = Value::from(row.get::<u8, &str>(x))
+            value = Value::from(row.get::<u8, &str>(column_name))
         } else if type_id == TypeId::of::<u16>() {
-            value = Value::from(row.get::<u16, &str>(x))
+            value = Value::from(row.get::<u16, &str>(column_name))
         } else if type_id == TypeId::of::<u32>() {
-            value = Value::from(row.get::<u32, &str>(x))
+            value = Value::from(row.get::<u32, &str>(column_name))
         } else if type_id == TypeId::of::<u64>() {
-            value = Value::from(row.get::<u64, &str>(x))
+            value = Value::from(row.get::<u64, &str>(column_name))
         } else if type_id == TypeId::of::<f32>() {
-            value = Value::from(row.get::<f32, &str>(x))
+            value = Value::from(row.get::<f32, &str>(column_name))
         } else if type_id == TypeId::of::<f64>() {
-            value = Value::from(row.get::<f64, &str>(x))
+            value = Value::from(row.get::<f64, &str>(column_name))
         } else if type_id == TypeId::of::<bool>() {
-            value = Value::from(row.get::<bool, &str>(x))
+            value = Value::from(row.get::<bool, &str>(column_name))
         } else {
             value = Default::default()
         }
-        value_map.put(x, value);
+        value_map.put(column_name, value);
     }
 
     value_map
-}
-
-pub fn get_type_id_from_column(table_name: &str, column_name: &str) -> TypeId {
-    // todo
-    if column_name == "name" || column_name == "group" {
-        return TypeId::of::<String>();
-    } else {
-        return TypeId::of::<i64>();
-    }
-
-    // constants::MYSQL_TYPE_RUST
-
-
 }
 

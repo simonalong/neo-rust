@@ -1,4 +1,4 @@
-use sqlx::{Database, Pool, MySql, Row, Column};
+use sqlx::{Database, Pool, MySql, Row, Column, TypeInfo};
 use sqlx::mysql::{MySqlPoolOptions, MySqlRow};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::sqlite::SqlitePoolOptions;
@@ -8,7 +8,7 @@ use std::time::Duration;
 use serde_json::Value;
 use std::any::{Any, TypeId};
 use std::ops::Deref;
-
+use std::convert::TryInto;
 
 
 #[tokio::test]
@@ -40,22 +40,34 @@ async fn test() {
 async fn test_insert() {
     let neo = Neo::connect("mysql://neo_test:neo@Test123@localhost:3306/demo1").await;
 
-    // let sql = "select demo1.`name`, demo2.`name` from demo1 as demo1 where id > ? left join demo2 on demo1.`id` = demo2.`id` limit 1";
-    let sql = "select d1.`name`, d2.`name` from demo1 as d1 left join demo2 as d2 on d1.`id` = d2.`id`  where d1.`id` > 1 limit 1";
+    let sql = "select `name` from demo1 where id > ? limit 1";
+    // let sql = "select d1.`name`, d2.`name` from demo1 as d1 left join demo2 as d2 on d1.`id` = d2.`id`  where d1.`id` > 1 limit 1";
 
     let result = sqlx::query(sql).bind(2).fetch_all(neo.get_connect_pool()).await;
     // println!("x ====  {:#?}", result);
     let it = result.iter();
     for x in it {
         for v in x {
-            generate("demo1", v);
+            // let neo_map = generate("demo1", v);
+            // println!(" neo map  === {:?}", neo_map);
 
             // let d: &MySqlRow = v;
             // v.columns().into_iter().for_each(|e|{
             //     println!(" = {}", e.name());
             // });
             // println!("v ====  {:#?}", v);
-            // println!("v.id ====  {}", v.get::<i8, &str>("id"));
+            // println!("v.id ====  {:?}", v.type_id());
+            // println!("v.id ====  {}", v.column("name").);
+
+            // let m = String::from("asdf");
+            let s = v.columns();
+            for x in s {
+                // println!("v.type_info ====  {:#?}", x.type_info());
+                let a = x.type_info();
+                println!("v.type_info ====  {}", a.name());
+            }
+            // println!("v.id ====  {:#?}", v.columns());
+            // println!("v.id ====  {:?}", v().type_id());
             // println!("v.id ====  {}", v.get::<i16, &str>("id"));
             // println!("v.id ====  {}", v.get::<i32, &str>("id"));
             // println!("v.id ====  {}", v.get::<i64, &str>("id"));
@@ -71,25 +83,40 @@ pub fn generate(table_name: &str, row: &MySqlRow) -> NeoMap {
 
     let value_map = NeoMap::new();
     for x in columns {
+        println!("column: {}", x);
         let type_id = get_type_id_from_column(table_name, x);
+        println!("type_id: {:?}", type_id);
 
-        let value = match type_id {
-            TypeId::of::<String>() => Value::from(row.get::<String, &str>(x)),
-            TypeId::of::<&str>() => Value::from(row.get::<&str, &str>(x)),
-            TypeId::of::<i8>() => Value::from(row.get::<i8, &str>(x)),
-            TypeId::of::<i16>() => Value::from(row.get::<i16, &str>(x)),
-            TypeId::of::<i32>() => Value::from(row.get::<i32, &str>(x)),
-            TypeId::of::<i64>() => Value::from(row.get::<i64, &str>(x)),
-            TypeId::of::<u8>() => Value::from(row.get::<u8, &str>(x)),
-            TypeId::of::<u16>() => Value::from(row.get::<u16, &str>(x)),
-            TypeId::of::<u32>() => Value::from(row.get::<u32, &str>(x)),
-            TypeId::of::<u64>() => Value::from(row.get::<u64, &str>(x)),
-            TypeId::of::<f32>() => Value::from(row.get::<f32, &str>(x)),
-            TypeId::of::<f64>() => Value::from(row.get::<f64, &str>(x)),
-            TypeId::of::<isize>() => Value::from(row.get::<isize, &str>(x)),
-            TypeId::of::<usize>() => Value::from(row.get::<usize, &str>(x)),
-            TypeId::of::<bool>() => Value::from(row.get::<bool, &str>(x))
-        };
+        let mut value:Value = Default::default();
+        if type_id == TypeId::of::<String>() {
+            value = Value::from(row.get::<String, &str>(x))
+        } else if type_id == TypeId::of::<&str>() {
+            value = Value::from(row.get::<&str, &str>(x))
+        } else if type_id == TypeId::of::<i8>() {
+            value = Value::from(row.get::<i8, &str>(x))
+        } else if type_id == TypeId::of::<i16>() {
+            value = Value::from(row.get::<i16, &str>(x))
+        } else if type_id == TypeId::of::<i32>() {
+            value = Value::from(row.get::<i32, &str>(x))
+        } else if type_id == TypeId::of::<i64>() {
+            value = Value::from(row.get::<i64, &str>(x))
+        } else if type_id == TypeId::of::<u8>() {
+            value = Value::from(row.get::<u8, &str>(x))
+        } else if type_id == TypeId::of::<u16>() {
+            value = Value::from(row.get::<u16, &str>(x))
+        } else if type_id == TypeId::of::<u32>() {
+            value = Value::from(row.get::<u32, &str>(x))
+        } else if type_id == TypeId::of::<u64>() {
+            value = Value::from(row.get::<u64, &str>(x))
+        } else if type_id == TypeId::of::<f32>() {
+            value = Value::from(row.get::<f32, &str>(x))
+        } else if type_id == TypeId::of::<f64>() {
+            value = Value::from(row.get::<f64, &str>(x))
+        } else if type_id == TypeId::of::<bool>() {
+            value = Value::from(row.get::<bool, &str>(x))
+        } else {
+            value = Default::default()
+        }
         value_map.put(x, value);
     }
 
@@ -103,5 +130,9 @@ pub fn get_type_id_from_column(table_name: &str, column_name: &str) -> TypeId {
     } else {
         return TypeId::of::<i64>();
     }
+
+    // constants::MYSQL_TYPE_RUST
+
+
 }
 

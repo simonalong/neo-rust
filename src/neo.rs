@@ -20,7 +20,7 @@ impl Neo {
         }
 
         if uri.to_string().starts_with("mysql") {
-            println!("-----{}", &uri);
+            // println!("-----{}", &uri);
             Neo::db_type.with(|e| (*(e.borrow_mut()) = String::from("mysql")));
 
             return Neo {

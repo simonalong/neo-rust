@@ -60,8 +60,6 @@ impl ObjectUtil {
             return true;
         } else if let Some(_) = value_any.downcast_ref::<i64>() {
             return true;
-        } else if let Some(_) = value_any.downcast_ref::<isize>() {
-            return true;
         } else if let Some(_) = value_any.downcast_ref::<u8>() {
             return true;
         } else if let Some(_) = value_any.downcast_ref::<u16>() {
@@ -69,8 +67,6 @@ impl ObjectUtil {
         } else if let Some(_) = value_any.downcast_ref::<u32>() {
             return true;
         } else if let Some(_) = value_any.downcast_ref::<u64>() {
-            return true;
-        } else if let Some(_) = value_any.downcast_ref::<usize>() {
             return true;
         } else if let Some(_) = value_any.downcast_ref::<f32>() {
             return true;

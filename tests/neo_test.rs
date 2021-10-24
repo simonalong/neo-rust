@@ -54,6 +54,10 @@ async fn test_insert() {
     }
 }
 
+pub fn bind_with() {
+
+}
+
 pub fn generate(row: &MySqlRow) -> NeoMap {
     let columns = row.columns();
 

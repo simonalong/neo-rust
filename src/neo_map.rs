@@ -2,10 +2,12 @@ use dashmap::DashMap;
 use serde_json::Value;
 use serde::Serialize;
 use std::collections::hash_map::Keys;
+use std::any::TypeId;
 
 #[derive(Debug)]
 pub struct NeoMap {
-    data_map: DashMap<String, Value>
+    data_map: DashMap<String, Value>,
+    type_map: DashMap<String, TypeId>
 }
 
 pub trait Put<T> {
@@ -18,7 +20,10 @@ pub trait PutType<T> {
 
 impl NeoMap {
     pub fn new() -> Self {
-        NeoMap { data_map: DashMap::new() }
+        NeoMap {
+            data_map: DashMap::new(),
+            type_map: DashMap::new()
+        }
     }
 
     pub fn keys(&self) -> Vec<String> {
@@ -56,12 +61,26 @@ impl NeoMap {
         return serde_json::from_str(str.as_str());
     }
 
-    pub fn get_type1<'a, T: Clone + Serialize + for<'de> serde::Deserialize<'de>>(&self, key: &str) -> Option<T> {
+    pub fn get_type<'a, T: Clone + Serialize + for<'de> serde::Deserialize<'de>>(&self, key: &str) -> Option<T> {
         let v = self.data_map.get(key);
         if let Some(re) = v {
             Option::Some(serde_json::from_value(re.value().clone()).unwrap())
         } else {
             Option::None
+        }
+    }
+
+    pub fn get_value_with_type(&self, key: &str) -> (&TypeId, &Value) {
+        let v = self.data_map.get(key);
+        let t = self.type_map.get(key);
+        if let Some(va) = v {
+            if let Some(ty) = t {
+                (ty.value(), va.value())
+            } else {
+                ()
+            }
+        } else {
+            ()
         }
     }
 }

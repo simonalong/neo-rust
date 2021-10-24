@@ -1,0 +1,69 @@
+[
+        "MySqlRow": {
+            row: Row {
+                storage: b"\x10\x02\0\0\0\x05name2",
+                values: [
+                    Some(
+                        1..5,
+                    ),
+                    Some(
+                        6..11,
+                    ),
+                    None,
+                ],
+            },
+            format: Binary,
+            columns: [
+                MySqlColumn {
+                    ordinal: 0,
+                    name: id,
+                    type_info: MySqlTypeInfo {
+                        type: Long,
+                        flags: NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT,
+                        char_set: 63,
+                        max_size: Some(
+                            11,
+                        ),
+                    },
+                    flags: Some(
+                        NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT,
+                    ),
+                },
+                MySqlColumn {
+                    ordinal: 1,
+                    name: name,
+                    type_info: MySqlTypeInfo {
+                        type: VarString,
+                        flags: NOT_NULL,
+                        char_set: 224,
+                        max_size: Some(
+                            48,
+                        ),
+                    },
+                    flags: Some(
+                        NOT_NULL,
+                    ),
+                },
+                MySqlColumn {
+                    ordinal: 2,
+                    name: group,
+                    type_info: MySqlTypeInfo {
+                        type: VarString,
+                        flags: (empty),
+                        char_set: 224,
+                        max_size: Some(
+                            256,
+                        ),
+                    },
+                    flags: Some(
+                        (empty),
+                    ),
+                },
+            ],
+            column_names: {
+                id: 0,
+                group: 2,
+                name: 1,
+            },
+        },
+    ]

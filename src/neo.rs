@@ -98,67 +98,61 @@ impl Neo {
         &self.connect_pool
     }
 
-    pub async fn insert(&self, table_name: &str, value_map: NeoMap) {
-        let sql = SqlBuilder::build_sql_of_insert(table_name, value_map);
-
-        // let query = sqlx::query(sql.as_str());
-        let query: Query<MySql, <MySql as HasArguments<'_>>::Arguments> = sqlx::query(sql.as_str());
-        for v in values {
-            query.bind(v);
-        }
-
-        let result = query.execute(self.get_connect_pool()).await;
-        let it = result.iter();
-        for x in it {
-            for v in x {
-                let neo_map = generate(v);
-                println!(" neo map  === {:?}", neo_map);
-            }
-        }
-        // let result = sqlx::query(sql.as_str()).bind("name1").bind("group1").execute(self.get_connect_pool()).await;
-        // println!("end 1");
-    }
-
-    pub fn bind_with_map(query: Query<MySql, <MySql as HasArguments<'_>>::Arguments>, value_map: NeoMap) {
-        let keys = value_map.keys();
-        for key in keys {
-            let type_value = value_map.get_value_with_type(key.as_str());
-
-            let type_id = type_value.0;
-            let value = type_value.1;
-
-            // todo
-            if type_id == TypeId::of::<String>() {
-                value = Value::from(row.get::<String, &str>(column_name))
-            } else if type_id == TypeId::of::<&str>() {
-                value = Value::from(row.get::<&str, &str>(column_name))
-            } else if type_id == TypeId::of::<i8>() {
-                value = Value::from(row.get::<i8, &str>(column_name))
-            } else if type_id == TypeId::of::<i16>() {
-                value = Value::from(row.get::<i16, &str>(column_name))
-            } else if type_id == TypeId::of::<i32>() {
-                value = Value::from(row.get::<i32, &str>(column_name))
-            } else if type_id == TypeId::of::<i64>() {
-                value = Value::from(row.get::<i64, &str>(column_name))
-            } else if type_id == TypeId::of::<u8>() {
-                value = Value::from(row.get::<u8, &str>(column_name))
-            } else if type_id == TypeId::of::<u16>() {
-                value = Value::from(row.get::<u16, &str>(column_name))
-            } else if type_id == TypeId::of::<u32>() {
-                value = Value::from(row.get::<u32, &str>(column_name))
-            } else if type_id == TypeId::of::<u64>() {
-                value = Value::from(row.get::<u64, &str>(column_name))
-            } else if type_id == TypeId::of::<f32>() {
-                value = Value::from(row.get::<f32, &str>(column_name))
-            } else if type_id == TypeId::of::<f64>() {
-                value = Value::from(row.get::<f64, &str>(column_name))
-            } else if type_id == TypeId::of::<bool>() {
-                value = Value::from(row.get::<bool, &str>(column_name))
-            } else {
-                value = Default::default()
-            }
-        }
-    }
+    // pub async fn insert(&self, table_name: &str, value_map: NeoMap) {
+    //     let sql = SqlBuilder::build_sql_of_insert(table_name, value_map);
+    //
+    //     let mut query = sqlx::query(sql.as_str());
+    //     Neo::bind_with_map(query, &value_map);
+    //
+    //     let result = query.execute(self.get_connect_pool()).await;
+    //     let it = result.iter();
+    //     for x in it {
+    //         for v in x {
+    //             let neo_map = Neo::generate(v);
+    //             println!(" neo map  === {:?}", neo_map);
+    //         }
+    //     }
+    //     let result = sqlx::query(sql.as_str()).bind("name1").bind("group1").execute(self.get_connect_pool()).await;
+    //     println!("end 1");
+    // }
+    //
+    // pub fn bind_with_map(query: Query<MySql, <MySql as HasArguments<'_>>::Arguments>, value_map: &NeoMap) {
+    //     let keys = value_map.keys();
+    //     for key in keys {
+    //         let type_value = value_map.get_value_with_type(key.as_str());
+    //
+    //         let type_id = *type_value.0;
+    //         let value = type_value.1;
+    //
+    //         if type_id == TypeId::of::<String>() {
+    //             query.bind(value.as_str().unwrap());
+    //         } else if type_id == TypeId::of::<&str>() {
+    //             query.bind(value.as_str().unwrap());
+    //         } else if type_id == TypeId::of::<i8>() {
+    //             query.bind(value.as_i64().unwrap() as i8);
+    //         } else if type_id == TypeId::of::<i16>() {
+    //             query.bind(value.as_i64().unwrap() as i16);
+    //         } else if type_id == TypeId::of::<i32>() {
+    //             query.bind(value.as_i64().unwrap() as i32);
+    //         } else if type_id == TypeId::of::<i64>() {
+    //             query.bind(value.as_i64().unwrap() as i64);
+    //         } else if type_id == TypeId::of::<u8>() {
+    //             query.bind(value.as_u64().unwrap() as u8);
+    //         } else if type_id == TypeId::of::<u16>() {
+    //             query.bind(value.as_u64().unwrap() as u16);
+    //         } else if type_id == TypeId::of::<u32>() {
+    //             query.bind(value.as_u64().unwrap() as u32);
+    //         } else if type_id == TypeId::of::<u64>() {
+    //             query.bind(value.as_u64().unwrap());
+    //         } else if type_id == TypeId::of::<f32>() {
+    //             query.bind(value.as_f64().unwrap() as f32);
+    //         } else if type_id == TypeId::of::<f64>() {
+    //             query.bind(value.as_f64().unwrap());
+    //         } else if type_id == TypeId::of::<bool>() {
+    //             query.bind(value.as_bool().unwrap());
+    //         }
+    //     }
+    // }
 
     pub fn generate(row: &MySqlRow) -> NeoMap {
         let columns = row.columns();

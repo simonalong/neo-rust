@@ -6,8 +6,8 @@ use std::any::TypeId;
 
 #[derive(Debug)]
 pub struct NeoMap {
-    data_map: DashMap<String, Value>,
-    type_map: DashMap<String, TypeId>
+    pub data_map: DashMap<String, Value>,
+    pub type_map: DashMap<String, TypeId>
 }
 
 pub trait Put<T> {
@@ -61,28 +61,19 @@ impl NeoMap {
         return serde_json::from_str(str.as_str());
     }
 
-    pub fn get_type<'a, T: Clone + Serialize + for<'de> serde::Deserialize<'de>>(&self, key: &str) -> Option<T> {
-        let v = self.data_map.get(key);
-        if let Some(re) = v {
-            Option::Some(serde_json::from_value(re.value().clone()).unwrap())
-        } else {
-            Option::None
-        }
-    }
-
-    pub fn get_value_with_type(&self, key: &str) -> (&TypeId, &Value) {
-        let v = self.data_map.get(key);
-        let t = self.type_map.get(key);
-        if let Some(va) = v {
-            if let Some(ty) = t {
-                (ty.value(), va.value())
-            } else {
-                ()
-            }
-        } else {
-            ()
-        }
-    }
+    // pub fn get_value_with_type<'a>(&self, key: &str) -> Option<(&TypeId, &Value)> {
+    //     let v = self.data_map.get(key);
+    //     let t = self.type_map.get(key);
+    //     if let Some(va) = v {
+    //         if let Some(ty) = t {
+    //             Some((ty.value(), &va.value().clone()))
+    //         } else {
+    //             None
+    //         }
+    //     } else {
+    //         None
+    //     }
+    // }
 }
 
 impl NeoMap {
